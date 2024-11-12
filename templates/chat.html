@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Chat Room</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+            const team_id = "{{ team_id }}";
+            const student_id = prompt("Enter your student ID to join the chat:");
+
+            socket.emit('join', {'team_id': team_id, 'student_id': student_id});
+
+            document.getElementById('sendButton').onclick = function() {
+                const message = document.getElementById('message').value;
+                socket.emit('message', {'team_id': team_id, 'message': student_id + ': ' + message});
+                document.getElementById('message').value = '';
+            };
+
+            socket.on('message', function(data) {
+                const chatBox = document.getElementById('chat');
+                chatBox.innerHTML += '<p>' + data + '</p>';
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Team Chat Room - 팀 {{ team_id }}</h1>
+    <div id="chat" style="border:1px solid black; height:300px; overflow:auto;"></div>
+    <input type="text" id="message" placeholder="메시지를 입력하세요">
+    <button id="sendButton">전송</button>
+</body>
+</html>
